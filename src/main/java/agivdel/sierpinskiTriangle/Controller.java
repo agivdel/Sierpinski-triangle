@@ -190,7 +190,6 @@ public class Controller extends View implements Initializable {
                     pause(timeDelay);
 
                     circle = sb.getCircle(threeDotsArray);//рисование текущей точки (с обводкой)
-
                     tracePoint = sb.getText(threeDotsArray);//позиционирование подписи к текущей точке
                     Platform.runLater(new DrawShape().param(pane1_interimShapes, circle, false));
                     Platform.runLater(new DrawShape().param(pane1_interimShapes, tracePoint, false));
@@ -241,7 +240,7 @@ public class Controller extends View implements Initializable {
         if (limit == 45000) {
             plusButton.setDisable(false);
         }
-        //если было 2, а после изменения стало 1, нужно деактивировать plusButton
+        //если было 2, а после изменения стало 1, нужно деактивировать minusButton
         if (limit == 1) {
             minusButton.setDisable(true);
         }
