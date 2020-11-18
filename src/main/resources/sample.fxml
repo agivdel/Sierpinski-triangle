@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<StackPane fx:id="stackPane" maxHeight="Infinity" maxWidth="Infinity" minHeight="400" minWidth="500" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="agivdel.sierpinskiTriangle.Controller">
+    <Pane fx:id="pane1_interimShapes" />
+
+    <Pane fx:id="pane2_points" />
+
+    <Pane fx:id="pane3_vertices_control" >
+        <StackPane fx:id="pane_A" >
+            <Circle fx:id="dot_A_inner" />
+            <Circle fx:id="dot_A_outer" />
+        </StackPane>
+
+        <StackPane fx:id="pane_B" >
+            <Circle fx:id="dot_B_inner" />
+            <Circle fx:id="dot_B_outer" />
+        </StackPane>
+
+        <StackPane fx:id="pane_C" >
+            <Circle fx:id="dot_C_inner" />
+            <Circle fx:id="dot_C_outer" />
+        </StackPane>
+
+        <VBox fx:id="controlVBox" alignment="CENTER"
+              layoutX="30.0" layoutY="30.0"
+              maxHeight="180.0" maxWidth="180.0"
+              minHeight="180" minWidth="180"
+              prefHeight="180" prefWidth="180"
+              spacing="10">
+            <HBox>
+                <Button fx:id="startButton" onAction="#start" prefWidth="55" text="start" />
+                <ToggleButton fx:id="pauseButton" prefWidth="50" text="pause" />
+                <Button fx:id="cancelButton" onAction="#cancel" prefWidth="55" text="cancel" />
+            </HBox>
+
+            <HBox fx:id="rateHBox" >
+                <ToggleButton fx:id="slowButton" prefWidth="45" text="slow" />
+                <ToggleButton fx:id="mediumButton" prefWidth="70" text="medium" />
+                <ToggleButton fx:id="fastButton" prefWidth="45" text="fast" />
+            </HBox>
+
+            <ProgressBar fx:id="progressBar" prefHeight="10.0" prefWidth="165" progress="1.0" />
+
+            <StackPane>
+                <Label fx:id="progressLabel" />
+                <Label fx:id="limitLabel" />
+            </StackPane>
+
+            <HBox>
+                <Button fx:id="minusButton" onAction="#limitMinus" prefWidth="50" text="-" />
+                <Button fx:id="plusButton" onAction="#limitPlus" prefWidth="50" text="+" />
+            </HBox>
+        </VBox>
+    </Pane>
+</StackPane>

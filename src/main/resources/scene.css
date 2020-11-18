@@ -1,0 +1,45 @@
+.root {
+    -fx-background-color: lightgray;
+}
+
+
+/*панель управления*/
+#controlVBox {
+    -fx-border-color: gray;
+    -fx-border-radius: 10;
+    -fx-padding: 5;
+    -fx-opacity: 0.8;
+    -fx-cursor: closed_hand;
+}
+HBox {
+    -fx-spacing: 5;
+    -fx-alignment: center;
+    -fx-cursor: default;
+}
+#progressBar .track {
+    -fx-text-box-border: none;
+    -fx-background-color: transparent;
+}
+#progressBar .bar {
+    -fx-background-color: red;
+}
+Label {
+    -fx-pref-width: 165;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+
+/*подвижные вершины треугольника*/
+#pane_A, #pane_B, #pane_C {
+    -fx-opacity: 0.5;
+}
+#dot_A_inner, #dot_B_inner, #dot_C_inner {
+    -fx-stroke: black;
+    -fx-fill: ffffff00;
+}
+#dot_A_outer, #dot_B_outer, #dot_C_outer {
+    -fx-stroke: gray;
+    -fx-fill: ffffff00;
+    -fx-cursor: closed_hand;
+}
