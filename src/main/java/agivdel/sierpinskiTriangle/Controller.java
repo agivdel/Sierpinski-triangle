@@ -126,11 +126,7 @@ public class Controller extends View implements Initializable {
         if (task != null) {
             task.cancel();
             task = null;
-            pauseButton.setSelected(false);
-            setDisableMinusPlusButtons(false);
-            limit = startLimit;//возвращаемся к стартовому значению числа точек
-            clearPane();
-            Thread.sleep(100);
+        } else {
             clearPane();
         }
     }
@@ -167,6 +163,9 @@ public class Controller extends View implements Initializable {
                 for (int i = limit; i >= 0; i--) {
                     if (isCancelled()) {
                         updateMessage("задача прервана");
+                        Platform.runLater(() -> {
+                            clearPane();
+                        });
                         break;
                     }
                     while (pauseButton.isSelected()) {
@@ -219,11 +218,14 @@ public class Controller extends View implements Initializable {
                 updateMessage("задача завершена");
                 limit = startLimit;
                 setDisableMinusPlusButtons(false);
+                task = null;
             }
 
             @Override
             protected void cancelled() {
-                cancel();
+                pauseButton.setSelected(false);
+                setDisableMinusPlusButtons(false);
+                limit = startLimit;
             }
         };
     }
