@@ -27,18 +27,15 @@ public class Controller extends View implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setVertexRadius();
+        setVerticesRadius();
         verticesRelocate();
         makeDraggable();
-        setVertices();
+        getNewVerticesCoordinates();
         rateToggleGroupInit();
-        labelsInit();
+        limitLabelInit();
     }
 
-    /**
-     * привязываем координаты сдвигаемых вершин к переменным для корректной отрисовки фрактала
-     */
-    private void setVertices() {
+    private void getNewVerticesCoordinates() {
         vertices = new double[] {Constants.X_A, Constants.Y_A, Constants.X_B, Constants.Y_B, Constants.X_C, Constants.Y_C};
 
         pane_A.layoutXProperty().addListener((obj, oldValue, newValue) -> {
@@ -63,16 +60,10 @@ public class Controller extends View implements Initializable {
         });
     }
 
-    /**
-     * геттер для массива координат трех вершин
-     */
     public double[] getVertices() {
         return vertices;
     }
 
-    /**
-     * группируем кнопки выбора скорости, привязываем к каждой время задержки (по сути: скорость отрисовки)
-     */
     private void rateToggleGroupInit() {
         ToggleGroup rateToggleGroup = new ToggleGroup();
         slowButton.setToggleGroup(rateToggleGroup);
@@ -88,16 +79,12 @@ public class Controller extends View implements Initializable {
         mediumButton.setUserData(Constants.MED);//200 мс пауза1, 200 мс пауза2
         fastButton.setUserData(Constants.FAST);//1 мс пауза1, 1 мс пауза2
 
-        slowButton.setSelected(true);//по умолчанию выбрана малая скорость
+        slowButton.setSelected(true);
 
         rateToggleGroup.selectedToggleProperty().addListener((observableValue, toggle, t1) ->
                 timeDelay = (int) rateToggleGroup.getSelectedToggle().getUserData());
     }
 
-    /**
-     * создание задачи и отдельного потока для нее,
-     * связывание свойств задачи и свойств индикатора прогресса, метки отображения итераций, доступности части кнопок
-     */
     @FXML
     private void start(ActionEvent actionEvent) {
         if (task != null && task.isRunning()) {
@@ -109,18 +96,14 @@ public class Controller extends View implements Initializable {
         thread.setDaemon(true);
         thread.start();
 
-        startLimit = limit;//запоминаем стартовое значение числа точек
-        setLimitLabelTop(false);
+        startLimit = limit;
+        setLimitLabelVisible(false);
         progressLabel.textProperty().bind(task.messageProperty());
         progressBar.progressProperty().bind(task.progressProperty());
-        pauseButton.disableProperty().bind(task.runningProperty().not());//кнопка паузы неактивна, когда задача не выполняется
-        setDisableMinusPlusButtons(true);
+        pauseButton.disableProperty().bind(task.runningProperty().not());
+        setMinusAndPlusButtonsDisable(true);
     }
 
-    /**
-     * отмена запущенной задачи во время выполнения или паузы,
-     * очистка панелей во время выполнения задачи, паузы или после завершения
-     */
     @FXML
     private void cancel(ActionEvent actionEvent) throws InterruptedException {
         if (task != null) {
@@ -131,11 +114,6 @@ public class Controller extends View implements Initializable {
         }
     }
 
-    /**
-     * описание задачи:
-     * цикл с отрисовкой на двух нижних панелях вспомогательных линий и точек, а также итоговых точек
-     * (отрисовка с помощью Platform.runLater и new Runnable()
-     */
     private Task<Void> createTask() {
         return new Task<Void>() {
             @Override
@@ -149,9 +127,7 @@ public class Controller extends View implements Initializable {
             }
 
             private void draw() {
-                Platform.runLater(() -> {
-                    clearPane();
-                });
+                Platform.runLater(() -> clearPane());
 
                 SierpinskiTriangle st = new SierpinskiTriangle();
                 st.correctVertices();
@@ -163,9 +139,7 @@ public class Controller extends View implements Initializable {
                 for (int i = limit; i >= 0; i--) {
                     if (isCancelled()) {
                         updateMessage("задача прервана");
-                        Platform.runLater(() -> {
-                            clearPane();
-                        });
+                        Platform.runLater(() -> clearPane());
                         break;
                     }
                     while (pauseButton.isSelected()) {
@@ -175,7 +149,7 @@ public class Controller extends View implements Initializable {
                     updateMessage("" + i);
                     updateProgress(i, limit);
 
-                    double[] threeDotsArray = st.getThreeDots();//получение вычисленных координат следующих точек
+                    double[] threeDotsArray = st.getThreeDots();
 
                     /**
                      * рисуем пунктир, делим его пополам красной точкой в черной обводке - это вспомогательные фигуры;
@@ -186,14 +160,35 @@ public class Controller extends View implements Initializable {
                     dashLine = sb.getLine(threeDotsArray);//рисование пунктира
                     Platform.runLater(new DrawShape().param(pane1_interimShapes, dashLine, true));
 
+                    //если использовать pause(), стирание происходит уже после первого же нажатия на cancel (чеерз заметную паузу).
                     pause(timeDelay);
+                    //если вместо pause() использовать "настоящее прерывание",
+                    //после прерывания (первого нажатия на cancel) не происходит стирания.
+                    //(т.к. стирание прописано только в самом первом if(isCanceled()), а не во всех трех)
+                    //для полного стирания в этом случае нужно нажать на cancel еще раз.
+//                    try {
+//                        Thread.sleep(timeDelay);
+//                    } catch (InterruptedException interrupted) {
+//                        if (isCancelled()) {//
+//                            updateMessage("задача прервана");
+//                            break;
+//                        }
+//                    }
 
                     circle = sb.getCircle(threeDotsArray);//рисование текущей точки (с обводкой)
-                    tracePoint = sb.getText(threeDotsArray);//позиционирование подписи к текущей точке
+                    tracePoint = sb.getText(threeDotsArray);//позиционирование подписи текущей точки
                     Platform.runLater(new DrawShape().param(pane1_interimShapes, circle, false));
                     Platform.runLater(new DrawShape().param(pane1_interimShapes, tracePoint, false));
 
                     pause(timeDelay);
+//                    try {
+//                        Thread.sleep(timeDelay);
+//                    } catch (InterruptedException interrupted) {
+//                        if (isCancelled()) {//
+//                            updateMessage("задача прервана");
+//                        break;
+//                        }
+//                    }
 
                     //"стирание" обводки текущей точки (на самом деле просто окрашивание обводки точки в цвет точки)
                     circle.setStroke(Color.RED);
@@ -205,11 +200,11 @@ public class Controller extends View implements Initializable {
                 try {
                     Thread.sleep(timeDelay);
                 } catch (InterruptedException interrupted) {
-                    if (isCancelled()) {//
-                        updateMessage("задача прервана");
-//                        break;
-                        return;
-                    }
+//                    if (isCancelled()) {//
+//                        updateMessage("задача прервана во время паузы");
+////                        break;
+//                        return;
+//                    }
                 }
             }
 
@@ -217,25 +212,22 @@ public class Controller extends View implements Initializable {
             protected void succeeded() {
                 updateMessage("задача завершена");
                 limit = startLimit;
-                setDisableMinusPlusButtons(false);
+                setMinusAndPlusButtonsDisable(false);
                 task = null;
             }
 
             @Override
             protected void cancelled() {
                 pauseButton.setSelected(false);
-                setDisableMinusPlusButtons(false);
+                setMinusAndPlusButtonsDisable(false);
                 limit = startLimit;
             }
         };
     }
 
-    /**
-     * управление числом точек отрисовки
-     */
     @FXML
     private void limitMinus() {
-        setLimitLabelTop(true);
+        setLimitLabelVisible(true);
         limit = new Limit().minus(limit);
 
         //если было 50000, а после изменения стало 45000, нужно активировать plusButton
@@ -249,12 +241,9 @@ public class Controller extends View implements Initializable {
         limitLabel.setText(String.valueOf(limit));
     }
 
-    /**
-     * управление числом точек отрисовки
-     */
     @FXML
     private void limitPlus() {
-        setLimitLabelTop(true);
+        setLimitLabelVisible(true);
         limit = new Limit().plus(limit);
 
         //если было 1, а после изменения стало 2, нужно активировать minusButton//

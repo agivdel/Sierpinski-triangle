@@ -11,7 +11,7 @@ public class SierpinskiTriangle {
     private static double midpointX, midpointY;
 
     /**
-     * инициализация трех вершин и первой текущей точки
+     * перед началом отрисовки корреткируем координаты вершин и первой текущей точки
      */
     void correctVertices() {
         double[] vertices = new Controller().getVertices();
@@ -27,17 +27,11 @@ public class SierpinskiTriangle {
         currentY = yA;
     }
 
-    /**
-     * геттер для координат точек, нужных для построения на каждом шагу цикла отрисовки
-     */
     public double[] getThreeDots() {
         generateSierpinskiTriangle();
         return new double[]{previousX, previousY, targetX, targetY, midpointX, midpointY};
     }
 
-    /**
-     * расчет координат точек, нужных для построения на каждом шагу цикла отрисовки
-     */
     private void generateSierpinskiTriangle() {
 
         int randomPoint = random.nextInt(3);

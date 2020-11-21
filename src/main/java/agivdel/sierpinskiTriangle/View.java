@@ -17,16 +17,16 @@ public class View {
 
     int limit;
 
-    @FXML public Pane pane1_interimShapes;//панель для промежуточных (вспомогательных) линий
-    @FXML public Pane pane2_points;//панель для итоговых точек
-    @FXML public Pane pane3_vertices_control;//самая верхняя панель для вершин треугольника и подвижной панели управления
+    @FXML public Pane pane1_interimShapes;
+    @FXML public Pane pane2_points;
+    @FXML public Pane pane3_vertices_control;
 
-    @FXML private VBox controlVBox;//панель управления
-    @FXML public Pane pane_A;//панель с двумя окружностями
+    @FXML private VBox controlVBox;
+    @FXML public Pane pane_A;
     @FXML public Pane pane_B;
     @FXML public Pane pane_C;
-    @FXML private Circle dot_A_inner;//окружность меньшего диаметра, совпадает с вершиной треугольника
-    @FXML private Circle dot_A_outer;//окружность большего диаметра
+    @FXML private Circle dot_A_inner;
+    @FXML private Circle dot_A_outer;
     @FXML private Circle dot_B_inner;
     @FXML private Circle dot_B_outer;
     @FXML private Circle dot_C_inner;
@@ -40,18 +40,13 @@ public class View {
     @FXML public Button plusButton;
 
 
-    /**
-     * метод для доступа к объекту окна программы
-     */
+
     void setStage(Stage stage) {
         View.stage = stage;
         scene = stage.getScene();
     }
 
-    /**
-     * задаем радиусы окружностей вокруг вершин треугольника
-     */
-    void setVertexRadius() {
+    void setVerticesRadius() {
         dot_A_inner.setRadius(Constants.RADIUS_INNER);
         dot_B_inner.setRadius(Constants.RADIUS_INNER);
         dot_C_inner.setRadius(Constants.RADIUS_INNER);
@@ -60,20 +55,12 @@ public class View {
         dot_C_outer.setRadius(Constants.RADIUS_OUTER);
     }
 
-    /**
-     * расставляем вершины трегуольника по начальным точкам
-     * (с поправкой на радиус видимой окружности, чтобы ее центр совпал со значением констант X_A, X_B и т.д.)
-     * после можно будет задать иное их расположение
-     */
     void verticesRelocate() {
         pane_A.relocate(Constants.X_A - Constants.SHIFT, Constants.Y_A - Constants.SHIFT);
         pane_B.relocate(Constants.X_B - Constants.SHIFT, Constants.Y_B - Constants.SHIFT);
         pane_C.relocate(Constants.X_C - Constants.SHIFT, Constants.Y_C - Constants.SHIFT);
     }
 
-    /**
-     * делаем панель контроля и вершины треугольника подвижными
-     */
     void makeDraggable() {
         DraggingNode.makeDraggable(pane_A);
         DraggingNode.makeDraggable(pane_B);
@@ -81,46 +68,26 @@ public class View {
         DraggingNode.makeDraggable(controlVBox);
     }
 
-
-    /**
-     * инициируем переменную limit (число точек, которые нужно отрисовать), отображаем ее на метке,
-     * отображаем индикатор прогресса
-     */
-    void labelsInit() {
+    void limitLabelInit() {
         limit = Constants.LIMIT;
         limitLabel.setText(String.valueOf(limit));
     }
 
-    /**
-     * очистка панелей со вспомогательными формами и основными точками (pane1, pane2)
-     * НЕ ВСЕГДА СРАБАТЫВАЕТ - ИСПРАВИТЬ!
-     */
     void clearPane() {
         pane1_interimShapes.getChildren().clear();
         pane2_points.getChildren().clear();
     }
 
-
-    /**
-     * меняем местами видимость двух текстовых меток, расположенных стопкой
-     */
-    void setLimitLabelTop(boolean top) {
+    void setLimitLabelVisible(boolean top) {
         limitLabel.setVisible(top);
         progressLabel.setVisible(!top);
     }
 
-    /**
-     * кнопки "+" и "-" нужно несколько раз делать недоступными и наоборот
-     */
-    void setDisableMinusPlusButtons(boolean disable) {
+    void setMinusAndPlusButtonsDisable(boolean disable) {
         minusButton.setDisable(disable);
         plusButton.setDisable(disable);
     }
 
-
-    /**
-     * отрисовка всех форм на разных панелях
-     */
     static class DrawShape implements Runnable {
         Pane pane;
         Shape shape;
