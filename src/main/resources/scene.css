@@ -9,7 +9,6 @@
     -fx-border-radius: 10;
     -fx-padding: 5;
     -fx-opacity: 0.8;
-    -fx-cursor: closed_hand;
 }
 HBox {
     -fx-spacing: 5;
@@ -41,5 +40,4 @@ Label {
 #dot_A_outer, #dot_B_outer, #dot_C_outer {
     -fx-stroke: gray;
     -fx-fill: ffffff00;
-    -fx-cursor: closed_hand;
 }

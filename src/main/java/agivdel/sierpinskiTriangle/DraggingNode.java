@@ -12,14 +12,18 @@ public class DraggingNode {
     public static void makeDraggable(Node node) {
         final Delta dragDelta = new Delta();
 
+        node.setOnMouseEntered(me -> node.getScene().setCursor(Cursor.OPEN_HAND));
+        node.setOnMouseExited(me -> node.getScene().setCursor(Cursor.DEFAULT));
+
         node.setOnMousePressed(me -> {
             if (me.isPrimaryButtonDown()) {
-                node.getScene().setCursor(Cursor.DEFAULT);
+                node.getScene().setCursor(Cursor.CLOSED_HAND);
             }
             //зафиксировали координаты курсора при нажатии
             dragDelta.x = me.getX();
             dragDelta.y = me.getY();
         });
+        node.setOnMouseReleased(me -> node.getScene().setCursor(Cursor.OPEN_HAND));
 
         node.setOnMouseDragged(me -> {
             // прибавили разницу в координатах курсора,
