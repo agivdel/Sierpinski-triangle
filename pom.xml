@@ -10,8 +10,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>15</javafx.version>
+        <maven.compiler.release>15</maven.compiler.release>
+        <javafx.version>14</javafx.version>
     </properties>
 
     <dependencies>
