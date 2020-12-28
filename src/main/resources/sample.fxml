@@ -4,7 +4,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<StackPane fx:id="stackPane" maxHeight="Infinity" maxWidth="Infinity" minHeight="400" minWidth="500" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="agivdel.sierpinskiTriangle.Controller">
+<StackPane fx:id="stackPane" maxHeight="Infinity" maxWidth="Infinity"
+           minHeight="400" minWidth="500"
+           xmlns="http://javafx.com/javafx/11.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="agivdel.sierpinskiTriangle.Controller">
     <Pane fx:id="pane1_interimShapes" />
 
     <Pane fx:id="pane2_points" />

@@ -74,8 +74,12 @@ public class View {
     }
 
     void clearPane() {
-        pane1_interimShapes.getChildren().clear();
+        clearInterimShapes();
         pane2_points.getChildren().clear();
+    }
+
+    void clearInterimShapes() {
+        pane1_interimShapes.getChildren().clear();
     }
 
     void setLimitLabelVisible(boolean top) {

@@ -19,10 +19,14 @@ public class Controller extends View implements Initializable {
     private Task<Void> task;
     private int startLimit;
 
-    @FXML private ToggleButton pauseButton;
-    @FXML private ToggleButton slowButton;
-    @FXML private ToggleButton mediumButton;
-    @FXML private ToggleButton fastButton;
+    @FXML
+    private ToggleButton pauseButton;
+    @FXML
+    private ToggleButton slowButton;
+    @FXML
+    private ToggleButton mediumButton;
+    @FXML
+    private ToggleButton fastButton;
 
 
     @Override
@@ -36,7 +40,7 @@ public class Controller extends View implements Initializable {
     }
 
     private void getNewVerticesCoordinates() {
-        vertices = new double[] {Constants.X_A, Constants.Y_A, Constants.X_B, Constants.Y_B, Constants.X_C, Constants.Y_C};
+        vertices = new double[]{Constants.X_A, Constants.Y_A, Constants.X_B, Constants.Y_B, Constants.X_C, Constants.Y_C};
 
         pane_A.layoutXProperty().addListener((obj, oldValue, newValue) -> {
             vertices[0] = newValue.doubleValue() + Constants.SHIFT;
@@ -102,6 +106,9 @@ public class Controller extends View implements Initializable {
         progressBar.progressProperty().bind(task.progressProperty());
         pauseButton.disableProperty().bind(task.runningProperty().not());
         setMinusAndPlusButtonsDisable(true);
+        pane_A.disableProperty().bind(task.runningProperty());
+        pane_B.disableProperty().bind(task.runningProperty());
+        pane_C.disableProperty().bind(task.runningProperty());
     }
 
     @FXML
@@ -132,8 +139,10 @@ public class Controller extends View implements Initializable {
                 SierpinskiTriangle st = new SierpinskiTriangle();
                 st.correctVertices();
 
-                ShapeBuilder sb = new ShapeBuilder();
+                ShapeBuilder shapeBuilder = new ShapeBuilder();
                 Shape dashLine, circle, tracePoint;
+
+                boolean isInterimPaneClear = false;
 
                 //цикл отрисовки
                 for (int i = limit; i >= 0; i--) {
@@ -157,15 +166,21 @@ public class Controller extends View implements Initializable {
                      * на месте середины линии остается только красная точка.
                      * черную обводку сопровождает текст "tracepoint"
                      */
-                    dashLine = sb.getLine(threeDotsArray);//рисование пунктира
-                    Platform.runLater(new DrawShape().param(pane1_interimShapes, dashLine, true));
+                    if (fastButton.isSelected() & !isInterimPaneClear) {
+                        Platform.runLater(() -> clearInterimShapes());//одноразовая очистка панели после перехода со slow/medium на fast
+                        isInterimPaneClear = true;
+                    }
+                    if (!fastButton.isSelected()) {//рисование пунктира и подписи к точке - на скорости slow & medium
+                        isInterimPaneClear = false;//если произойдет переключение со slow/medium на fast, это обеспечит одноразовую очистку панели
+                        dashLine = shapeBuilder.getLine(threeDotsArray);//рисование пунктира
+                        Platform.runLater(new DrawShape().param(pane1_interimShapes, dashLine, true));
 
-                    //если использовать pause(), стирание происходит уже после первого же нажатия на cancel (чеерз заметную паузу).
-                    pause(timeDelay);
-                    //если вместо pause() использовать "настоящее прерывание",
-                    //после прерывания (первого нажатия на cancel) не происходит стирания.
-                    //(т.к. стирание прописано только в самом первом if(isCanceled()), а не во всех трех)
-                    //для полного стирания в этом случае нужно нажать на cancel еще раз.
+                        //если использовать pause(), стирание происходит уже после первого же нажатия на cancel (через заметную паузу).
+                        pause(timeDelay);
+                        //если вместо pause() использовать "настоящее прерывание",
+                        //после прерывания (первого нажатия на cancel) не происходит стирания.
+                        //(т.к. стирание прописано только в самом первом if(isCanceled()), а не во всех трех)
+                        //для полного стирания в этом случае нужно нажать на cancel еще раз.
 //                    try {
 //                        Thread.sleep(timeDelay);
 //                    } catch (InterruptedException interrupted) {
@@ -175,10 +190,11 @@ public class Controller extends View implements Initializable {
 //                        }
 //                    }
 
-                    circle = sb.getCircle(threeDotsArray);//рисование текущей точки (с обводкой)
-                    tracePoint = sb.getText(threeDotsArray);//позиционирование подписи текущей точки
+                        tracePoint = shapeBuilder.getText(threeDotsArray);//позиционирование подписи текущей точки
+                        Platform.runLater(new DrawShape().param(pane1_interimShapes, tracePoint, false));
+                    }
+                    circle = shapeBuilder.getCircle(threeDotsArray);//рисование текущей точки (с обводкой)
                     Platform.runLater(new DrawShape().param(pane1_interimShapes, circle, false));
-                    Platform.runLater(new DrawShape().param(pane1_interimShapes, tracePoint, false));
 
                     pause(timeDelay);
 //                    try {
